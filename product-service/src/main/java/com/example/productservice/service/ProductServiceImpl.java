@@ -7,6 +7,10 @@ import com.example.productservice.repository.ProductRepository;
 import io.grpc.stub.StreamObserver;
 import org.springframework.grpc.server.service.GrpcService;
 
+import java.util.Random;
+
+import java.util.concurrent.TimeUnit;
+
 @GrpcService
 public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBase {
 
@@ -35,5 +39,29 @@ public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBas
         }
         responseObserver.onError(new RuntimeException("Product not found"));
 
+    }
+
+    @Override
+    public void streamProductBySku(ProductSkuReq request, StreamObserver<ProductResp> responseObserver) {
+        // Simulate a delay
+        try {
+            // Generate a random number between 1 and 100
+            for (int i = 0; i < 10; i++) {
+            TimeUnit.SECONDS.sleep(5);
+                int randomNumber = new Random().nextInt(100) + 1;
+                int randomPrice = new Random().nextInt(1000) + 1;
+                responseObserver.onNext(ProductResp.newBuilder()
+                        .setId(i)
+                        .setName("Product " + i)
+                        .setDescription("Product " + i)
+                        .setSku("SKU-" + i)
+                        .setPrice(randomPrice)
+                        .setQuantity(randomNumber)
+                        .build());
+            }
+            responseObserver.onCompleted();
+        } catch (InterruptedException e) {
+            responseObserver.onError(e);
+        }
     }
 }

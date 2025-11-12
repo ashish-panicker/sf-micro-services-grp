@@ -7,7 +7,10 @@ option java_outer_classname = "ProductProto";
 package com.example.productservice;
 
 service ProductService {
+
   rpc getProductBySku(ProductSkuReq) returns (ProductResp);
+
+  rpc streamProductBySku(ProductSkuReq) returns (stream ProductResp);
 }
 
 message ProductSkuReq {
