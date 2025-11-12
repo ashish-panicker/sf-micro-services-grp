@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.productservice";
+option java_outer_classname = "ProductProto";
+
+package com.example.productservice;
+
+service ProductService {
+  rpc getProductBySku(ProductSkuReq) returns (ProductResp);
+}
+
+message ProductSkuReq {
+  string sku = 1;
+}
+
+message ProductResp {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string sku = 4;
+  double price = 5;
+  int32 quantity = 6;
+}
