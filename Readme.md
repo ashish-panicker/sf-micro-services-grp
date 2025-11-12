@@ -60,3 +60,18 @@ Supports multiple mode of comunications:
 
 ## Protobuf
 
+### Data Types
+
+| Type | Description |
+|------|-------------|
+| double | 64-bit IEEE 754 floating point |
+| float | 32-bit IEEE 754 floating point |
+| int32 | Signed 32-bit integer |
+| int64 | Signed 64-bit integer |
+| uint32 | Unsigned 32-bit integer |
+| uint64 | Unsigned 64-bit integer |
+| sint32 | Signed 32-bit integer using ZigZag encoding |
+| sint64 | Signed 64-bit integer using ZigZag encoding |
+
+## References
+- https://grpc.io/docs/guides/concepts/
