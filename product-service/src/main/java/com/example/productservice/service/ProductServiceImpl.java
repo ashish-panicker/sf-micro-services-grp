@@ -1,10 +1,11 @@
 package com.example.productservice.service;
 
-import com.example.productservice.ProductResp;
-import com.example.productservice.ProductServiceGrpc;
-import com.example.productservice.ProductSkuReq;
+import com.example.productservice.*;
+import com.example.productservice.model.Product;
 import com.example.productservice.repository.ProductRepository;
 import io.grpc.stub.StreamObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.grpc.server.service.GrpcService;
 
 import java.util.Random;
@@ -16,6 +17,7 @@ public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBas
 
 
     private final ProductRepository productRepository;
+    private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -47,7 +49,7 @@ public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBas
         try {
             // Generate a random number between 1 and 100
             for (int i = 0; i < 10; i++) {
-            TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(5);
                 int randomNumber = new Random().nextInt(100) + 1;
                 int randomPrice = new Random().nextInt(1000) + 1;
                 responseObserver.onNext(ProductResp.newBuilder()
@@ -63,5 +65,41 @@ public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBas
         } catch (InterruptedException e) {
             responseObserver.onError(e);
         }
+    }
+
+    @Override
+    public StreamObserver<BulkProductReq> bulkProductLoading(StreamObserver<BulkProductResp> responseObserver) {
+        return new StreamObserver<BulkProductReq>() {
+
+            private int totalOrders = 0;
+            private int totalSuccess = 0;
+
+            @Override
+            public void onNext(BulkProductReq bulkProductReq) {
+                Product product = new Product(bulkProductReq.getId(), bulkProductReq.getName(), bulkProductReq.getDescription(),
+                        bulkProductReq.getSku(), bulkProductReq.getPrice(), bulkProductReq.getQuantity(), true);
+                productRepository.save(product);
+                totalOrders++;
+                totalSuccess++;
+                logger.info("Product saved successfully: {}", product);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                --totalSuccess;
+                responseObserver.onError(throwable);
+
+            }
+
+            @Override
+            public void onCompleted() {
+                var summary = BulkProductResp.newBuilder()
+                        .setTotalOrders(totalOrders)
+                        .setTotalSuccess(totalSuccess)
+                        .build();
+                responseObserver.onNext(summary);
+                responseObserver.onCompleted();
+            }
+        };
     }
 }

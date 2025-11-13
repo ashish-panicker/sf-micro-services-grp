@@ -11,6 +11,23 @@ service ProductService {
   rpc getProductBySku(ProductSkuReq) returns (ProductResp);
 
   rpc streamProductBySku(ProductSkuReq) returns (stream ProductResp);
+
+  rpc bulkProductLoading(stream BulkProductReq) returns (BulkProductResp);
+}
+
+message BulkProductReq{
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string sku = 4;
+  double price = 5;
+  int32 quantity = 6;
+  bool available = 7;
+}
+
+message BulkProductResp {
+  int32 total_orders = 1;
+  int32 total_success = 2;
 }
 
 message ProductSkuReq {
