@@ -102,4 +102,32 @@ public class ProductServiceImpl extends ProductServiceGrpc.ProductServiceImplBas
             }
         };
     }
+
+    @Override
+    public StreamObserver<BulkProductReq> liveProductLoading(StreamObserver<BulkProductResp> responseObserver) {
+        return new StreamObserver<BulkProductReq>() {
+            @Override
+            public void onNext(BulkProductReq bulkProductReq) {
+                Product product = new Product(bulkProductReq.getId(), bulkProductReq.getName(), bulkProductReq.getDescription(),
+                        bulkProductReq.getSku(), bulkProductReq.getPrice(), bulkProductReq.getQuantity(), true);
+                productRepository.save(product);
+                logger.info("Product saved successfully: {}", product);
+                responseObserver.onNext(BulkProductResp.newBuilder()
+                        .setTotalOrders(1)
+                        .setTotalSuccess(1)
+                        .build());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                responseObserver.onError(throwable);
+                logger.error("Error while saving product", throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
 }

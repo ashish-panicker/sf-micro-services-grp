@@ -13,6 +13,8 @@ service ProductService {
   rpc streamProductBySku(ProductSkuReq) returns (stream ProductResp);
 
   rpc bulkProductLoading(stream BulkProductReq) returns (BulkProductResp);
+
+  rpc liveProductLoading(stream BulkProductReq) returns (stream BulkProductResp);
 }
 
 message BulkProductReq{
