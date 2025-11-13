@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.productservice";
+option java_outer_classname = "ProductProto";
+
+package com.example.productservice;
+
+service ProductService {
+
+  rpc getProductBySku(ProductSkuReq) returns (ProductResp);
+
+  rpc streamProductBySku(ProductSkuReq) returns (stream ProductResp);
+
+  rpc bulkProductLoading(stream BulkProductReq) returns (BulkProductResp);
+
+  rpc liveProductLoading(stream BulkProductReq) returns (stream BulkProductResp);
+}
+
+message BulkProductReq{
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string sku = 4;
+  double price = 5;
+  int32 quantity = 6;
+  bool available = 7;
+}
+
+message BulkProductResp {
+  int32 total_orders = 1;
+  int32 total_success = 2;
+}
+
+message ProductSkuReq {
+  string sku = 1;
+}
+
+message ProductResp {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string sku = 4;
+  double price = 5;
+  int32 quantity = 6;
+}
